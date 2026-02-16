@@ -27,10 +27,12 @@ export async function POST(request: NextRequest) {
       p.time_range_start, p.time_range_end, p.timezone
     );
 
-    // Send email in background — don't block meeting creation if email fails
-    sendMeetingCreatedEmail(p.creator_email, p.creator_name, p.title, id).catch((err) =>
-      console.error('[EMAIL ERROR] Failed to send meeting created email:', err)
-    );
+    // Await email but don't let failure block the response
+    try {
+      await sendMeetingCreatedEmail(p.creator_email, p.creator_name, p.title, id);
+    } catch (emailErr) {
+      console.error('[EMAIL ERROR] Failed to send meeting created email:', emailErr);
+    }
 
     return NextResponse.json({ id, shareLink: `/meeting/${id}/respond` }, { status: 201 });
   } catch (error) {

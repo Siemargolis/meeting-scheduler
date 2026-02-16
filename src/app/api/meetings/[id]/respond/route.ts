@@ -48,13 +48,15 @@ export async function POST(
 
     transaction();
 
-    // Send email in background — don't block response submission if email fails
-    sendNewResponseEmail(
-      meeting.creator_email, meeting.creator_name,
-      respondent_name.trim(), meeting.title, meeting.id
-    ).catch((err) =>
-      console.error('[EMAIL ERROR] Failed to send new response email:', err)
-    );
+    // Await email but don't let failure block the response
+    try {
+      await sendNewResponseEmail(
+        meeting.creator_email, meeting.creator_name,
+        respondent_name.trim(), meeting.title, meeting.id
+      );
+    } catch (emailErr) {
+      console.error('[EMAIL ERROR] Failed to send new response email:', emailErr);
+    }
 
     return NextResponse.json({ success: true, responseId }, { status: 201 });
   } catch (error) {
