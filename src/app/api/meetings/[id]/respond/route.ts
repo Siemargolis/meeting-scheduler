@@ -30,10 +30,6 @@ export async function POST(
       return NextResponse.json({ error: 'Meeting not found' }, { status: 404 });
     }
 
-    if (meeting.finalized_slot_start) {
-      return NextResponse.json({ error: 'This meeting has already been finalized.' }, { status: 400 });
-    }
-
     const responseId = generateId();
 
     const insertResponse = db.prepare(

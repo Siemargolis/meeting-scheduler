@@ -1,9 +1,8 @@
 import { getDb } from '@/lib/db';
 import { generateTimeSlots, getDateRange } from '@/lib/utils';
 import { CopyButton } from '@/components/CopyButton';
-import { DashboardClient } from '@/components/DashboardClient';
+import { HeatmapGrid } from '@/components/HeatmapGrid';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import type { MeetingRow, ResponseRow, AvailabilitySlotRow, SlotAvailability } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -52,23 +51,6 @@ export default function MeetingDetailPage({ params }: { params: { id: string } }
       respondents: matchingRespondents,
     };
   });
-
-  if (meeting.finalized_slot_start) {
-    return (
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        <h1 className="text-2xl font-bold mb-2">{meeting.title}</h1>
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6 mt-4">
-          <h2 className="text-lg font-semibold text-emerald-800 mb-2">Meeting Finalized</h2>
-          <p className="text-emerald-700">
-            This meeting has been scheduled. View the details on the{' '}
-            <Link href={`/meeting/${meeting.id}/results`} className="underline font-medium">
-              results page
-            </Link>.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
@@ -132,15 +114,14 @@ export default function MeetingDetailPage({ params }: { params: { id: string } }
         )}
       </div>
 
-      {/* Heatmap + finalize */}
+      {/* Heatmap (read-only) */}
       {responses.length > 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold mb-4">Availability Heatmap</h2>
           <p className="text-sm text-gray-600 mb-4">
-            Darker cells mean more people are available. Click a slot to select it for finalization.
+            Darker cells mean more people are available. Hover over a cell to see who&apos;s free at that time.
           </p>
-          <DashboardClient
-            meetingId={meeting.id}
+          <HeatmapGrid
             dates={dates}
             timeSlots={allSlots}
             aggregated={aggregated}

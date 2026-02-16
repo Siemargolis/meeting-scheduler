@@ -1,7 +1,7 @@
 import { getDb } from '@/lib/db';
 import { generateTimeSlots, getDateRange } from '@/lib/utils';
 import { RespondForm } from '@/components/RespondForm';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import type { MeetingRow } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -12,10 +12,6 @@ export default function RespondPage({ params }: { params: { id: string } }) {
 
   if (!meeting) {
     notFound();
-  }
-
-  if (meeting.finalized_slot_start) {
-    redirect(`/meeting/${params.id}/results`);
   }
 
   const slots = generateTimeSlots(
