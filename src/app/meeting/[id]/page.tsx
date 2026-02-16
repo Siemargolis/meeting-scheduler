@@ -87,6 +87,19 @@ export default function MeetingDetailPage({ params }: { params: { id: string } }
         </div>
       </div>
 
+      {/* Bookmark reminder */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+        <p className="text-sm text-amber-800">
+          <span className="font-semibold">Bookmark this page!</span> This is your organizer dashboard &mdash; you&apos;ll need this link to check responses and review availability.
+        </p>
+        <div className="flex items-center gap-3 mt-2">
+          <code className="text-xs text-amber-700 bg-amber-100 px-3 py-1.5 rounded flex-1 overflow-x-auto">
+            {`${baseUrl}/meeting/${meeting.id}`}
+          </code>
+          <CopyButton text={`${baseUrl}/meeting/${meeting.id}`} />
+        </div>
+      </div>
+
       {/* Share link */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
         <p className="text-sm text-blue-800 font-medium mb-1">Share this link with participants:</p>
