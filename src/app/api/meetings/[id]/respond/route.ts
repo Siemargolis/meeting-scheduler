@@ -48,10 +48,10 @@ export async function POST(
 
     transaction();
 
-    sendNewResponseEmail(
+    await sendNewResponseEmail(
       meeting.creator_email, meeting.creator_name,
       respondent_name.trim(), meeting.title, meeting.id
-    ).catch(console.error);
+    );
 
     return NextResponse.json({ success: true, responseId }, { status: 201 });
   } catch (error) {

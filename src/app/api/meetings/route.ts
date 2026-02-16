@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       p.time_range_start, p.time_range_end, p.timezone
     );
 
-    sendMeetingCreatedEmail(p.creator_email, p.creator_name, p.title, id).catch(console.error);
+    await sendMeetingCreatedEmail(p.creator_email, p.creator_name, p.title, id);
 
     return NextResponse.json({ id, shareLink: `/meeting/${id}/respond` }, { status: 201 });
   } catch (error) {

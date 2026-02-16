@@ -21,17 +21,19 @@ async function sendMail(to: string, subject: string, html: string, text: string)
   const transporter = getTransporter();
   if (!transporter) {
     console.log(`[EMAIL SKIPPED - no SMTP configured] To: ${to} | Subject: ${subject}`);
+    console.log(`[EMAIL DEBUG] SMTP_HOST=${process.env.SMTP_HOST} SMTP_USER=${process.env.SMTP_USER ? 'set' : 'unset'}`);
     return;
   }
   try {
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'Meeting Scheduler <noreply@example.com>',
+    const fromAddr = (process.env.SMTP_FROM || 'MeetSync <noreply@example.com>').replace(/^["']|["']$/g, '');
+    const info = await transporter.sendMail({
+      from: fromAddr,
       to,
       subject,
       html,
       text,
     });
-    console.log(`[EMAIL SENT] To: ${to} | Subject: ${subject}`);
+    console.log(`[EMAIL SENT] To: ${to} | Subject: ${subject} | MessageId: ${info.messageId}`);
   } catch (err) {
     console.error(`[EMAIL ERROR] To: ${to} | Subject: ${subject}`, err);
   }
