@@ -46,7 +46,7 @@ export default function HomePage() {
           </div>
           <h3 className="font-semibold text-lg mb-2">Pick</h3>
           <p className="text-gray-600 text-sm">
-            View a heatmap of everyone&apos;s availability and choose the best time. Everyone gets notified.
+            View a heatmap of everyone&apos;s availability and choose the best time. You&apos;ll be notified as responses come in.
           </p>
         </div>
       </div>
