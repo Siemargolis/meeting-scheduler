@@ -4,6 +4,8 @@ import { RespondForm } from '@/components/RespondForm';
 import { notFound, redirect } from 'next/navigation';
 import type { MeetingRow } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 export default function RespondPage({ params }: { params: { id: string } }) {
   const db = getDb();
   const meeting = db.prepare('SELECT * FROM meetings WHERE id = ?').get(params.id) as MeetingRow | undefined;

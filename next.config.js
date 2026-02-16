@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+  serverExternalPackages: ['better-sqlite3'],
   experimental: {
     serverComponentsExternalPackages: ['better-sqlite3'],
   },
