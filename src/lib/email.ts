@@ -1,39 +1,36 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-function getTransporter() {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.log(`[EMAIL DEBUG] Missing creds: SMTP_USER=${process.env.SMTP_USER ? 'set' : 'unset'} SMTP_PASS=${process.env.SMTP_PASS ? 'set' : 'unset'}`);
+function getResend() {
+  if (!process.env.RESEND_API_KEY) {
+    console.log('[EMAIL DEBUG] RESEND_API_KEY not set');
     return null;
   }
-  console.log(`[EMAIL DEBUG] Creating Gmail transporter for user: ${process.env.SMTP_USER}`);
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  return new Resend(process.env.RESEND_API_KEY);
 }
 
 const baseUrl = () => process.env.BASE_URL || 'http://localhost:3000';
 
 async function sendMail(to: string, subject: string, html: string, text: string) {
-  const transporter = getTransporter();
-  if (!transporter) {
-    console.log(`[EMAIL SKIPPED - no SMTP configured] To: ${to} | Subject: ${subject}`);
-    console.log(`[EMAIL DEBUG] SMTP_HOST=${process.env.SMTP_HOST} SMTP_USER=${process.env.SMTP_USER ? 'set' : 'unset'}`);
+  const resend = getResend();
+  if (!resend) {
+    console.log(`[EMAIL SKIPPED - no API key] To: ${to} | Subject: ${subject}`);
     return;
   }
   try {
-    const fromAddr = (process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@example.com').replace(/^["']|["']$/g, '');
-    const info = await transporter.sendMail({
+    const fromAddr = process.env.EMAIL_FROM || 'MeetSync <onboarding@resend.dev>';
+    console.log(`[EMAIL] Sending to: ${to} | From: ${fromAddr} | Subject: ${subject}`);
+    const { data, error } = await resend.emails.send({
       from: fromAddr,
       to,
       subject,
       html,
       text,
     });
-    console.log(`[EMAIL SENT] To: ${to} | Subject: ${subject} | MessageId: ${info.messageId}`);
+    if (error) {
+      console.error(`[EMAIL ERROR] To: ${to} | Subject: ${subject}`, error);
+    } else {
+      console.log(`[EMAIL SENT] To: ${to} | Subject: ${subject} | Id: ${data?.id}`);
+    }
   } catch (err) {
     console.error(`[EMAIL ERROR] To: ${to} | Subject: ${subject}`, err);
   }
