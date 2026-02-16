@@ -2,22 +2,12 @@ import nodemailer from 'nodemailer';
 
 function getTransporter() {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.log(`[EMAIL DEBUG] Missing creds: SMTP_USER=${process.env.SMTP_USER ? 'set' : 'unset'} SMTP_PASS=${process.env.SMTP_PASS ? 'set' : 'unset'}`);
     return null;
   }
-  // Use Gmail's built-in service shortcut if host is Gmail, otherwise use generic SMTP
-  if (!process.env.SMTP_HOST || process.env.SMTP_HOST === 'smtp.gmail.com') {
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-  }
+  console.log(`[EMAIL DEBUG] Creating Gmail transporter for user: ${process.env.SMTP_USER}`);
   return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: Number(process.env.SMTP_PORT) === 465,
+    service: 'gmail',
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
