@@ -1,8 +1,18 @@
 import nodemailer from 'nodemailer';
 
 function getTransporter() {
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     return null;
+  }
+  // Use Gmail's built-in service shortcut if host is Gmail, otherwise use generic SMTP
+  if (!process.env.SMTP_HOST || process.env.SMTP_HOST === 'smtp.gmail.com') {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
   }
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -25,7 +35,7 @@ async function sendMail(to: string, subject: string, html: string, text: string)
     return;
   }
   try {
-    const fromAddr = (process.env.SMTP_FROM || 'MeetSync <noreply@example.com>').replace(/^["']|["']$/g, '');
+    const fromAddr = (process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@example.com').replace(/^["']|["']$/g, '');
     const info = await transporter.sendMail({
       from: fromAddr,
       to,
